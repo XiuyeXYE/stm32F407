@@ -82,7 +82,7 @@ int main(void) {
 	/* Initialize all configured peripherals */
 	/* USER CODE BEGIN 2 */
 
-	Stm32_Clock_Init(336, 9, 2, 7);
+//	Stm32_Clock_Init(336, 9, 2, 7);
 	delay_init(168);		//初始化延时函数
 	LED_Init();				//初始化LED时钟
 	/* USER CODE END 2 */
@@ -91,12 +91,19 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		/* USER CODE END WHILE */
-		LED0 = 0;				//DS0亮
-		LED1 = 1;				//DS1灭
+//		LED0 = 0;				//DS0亮
+//		LED1 = 1;				//DS1灭
+//		delay_ms(500);
+//		LED0 = 1;				//DS0灭
+//		LED1 = 0;				//DS1亮
+//		delay_ms(500);
+		Reg_Pos_Bits_Reset_0(&GPIOF->ODR, 9, 2);
 		delay_ms(500);
-		LED0 = 1;				//DS0灭
-		LED1 = 0;				//DS1亮
+
+		Reg_Pos_Bits_Set(&GPIOF->ODR, 9, 3);
+
 		delay_ms(500);
+
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */

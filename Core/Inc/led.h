@@ -7,7 +7,7 @@
 
 #ifndef INC_LED_H_
 #define INC_LED_H_
-#include"sys.h"
+
 //LED端口定义
 #define LED0 PFout(9)	// DS0
 #define LED1 PFout(10)	// DS1

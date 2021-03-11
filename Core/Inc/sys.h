@@ -1,9 +1,7 @@
-
 #ifndef INC_SYS_H_
 #define INC_SYS_H_
 
 #include"stm32f407xx.h"
-
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -120,21 +118,28 @@ typedef uint32_t u32;
 #define PIN14				1<<14
 #define PIN15				1<<15
 //////////////////////////////////////////////////////////////////////////////////
-u8 Sys_Clock_Set(u32 plln,u32 pllm,u32 pllp,u32 pllq);		//系统时钟设置
-void Stm32_Clock_Init(u32 plln,u32 pllm,u32 pllp,u32 pllq); //时钟初始化
+u8 Sys_Clock_Set(u32 plln, u32 pllm, u32 pllp, u32 pllq);		//系统时钟设置
+void Stm32_Clock_Init(u32 plln, u32 pllm, u32 pllp, u32 pllq); //时钟初始化
 void Sys_Soft_Reset(void);      							//系统软复位
 void Sys_Standby(void);         							//待机模式
 void MY_NVIC_SetVectorTable(u32 NVIC_VectTab, u32 Offset);	//设置偏移地址
 void MY_NVIC_PriorityGroupConfig(u8 NVIC_Group);			//设置NVIC分组
-void MY_NVIC_Init(u8 NVIC_PreemptionPriority,u8 NVIC_SubPriority,u8 NVIC_Channel,u8 NVIC_Group);//设置中断
-void Ex_NVIC_Config(u8 GPIOx,u8 BITx,u8 TRIM);				//外部中断配置函数(只对GPIOA~I)
-void GPIO_AF_Set(GPIO_TypeDef* GPIOx,u8 BITx,u8 AFx);		//GPIO复用功能设置
-void GPIO_Set(GPIO_TypeDef* GPIOx,u32 BITx,u32 MODE,u32 OTYPE,u32 OSPEED,u32 PUPD);//GPIO设置函数
+void MY_NVIC_Init(u8 NVIC_PreemptionPriority, u8 NVIC_SubPriority,
+		u8 NVIC_Channel, u8 NVIC_Group);			//设置中断
+void Ex_NVIC_Config(u8 GPIOx, u8 BITx, u8 TRIM);		//外部中断配置函数(只对GPIOA~I)
+void GPIO_AF_Set(GPIO_TypeDef *GPIOx, u8 BITx, u8 AFx);		//GPIO复用功能设置
+void GPIO_Set(GPIO_TypeDef *GPIOx, u32 BITx, u32 MODE, u32 OTYPE, u32 OSPEED,
+		u32 PUPD);		//GPIO设置函数
 //以下为汇编函数
 void WFI_SET(void);		//执行WFI指令
-void INTX_DISABLE(void);//关闭所有中断
+void INTX_DISABLE(void);		//关闭所有中断
 void INTX_ENABLE(void);	//开启所有中断
 void MSR_MSP(u32 addr);	//设置堆栈地址
 
+void Reg_Pos_Bits_Reset_0(__IO uint32_t *reg_addr, u32 bit_start_pos,
+		u32 bits_to_reset);
+
+void Reg_Pos_Bits_Set(__IO uint32_t *reg_addr, u32 bit_start_pos,
+		u32 bits_value);
 
 #endif

@@ -223,3 +223,17 @@ void Stm32_Clock_Init(u32 plln,u32 pllm,u32 pllp,u32 pllq)
 }
 
 
+void Reg_Pos_Bits_Reset_0(__IO uint32_t *reg_addr, u32 bit_start_pos,
+		u32 bits_to_reset) {
+	u32 bits_value = 1;
+	for (u32 i = 0; i < bits_to_reset; i++) {
+		bits_value = (bits_value << 1) + 1;
+	}
+	*reg_addr &= ~(bits_value << bit_start_pos);
+}
+
+void Reg_Pos_Bits_Set(__IO uint32_t *reg_addr, u32 bit_start_pos,
+		u32 bits_value) {
+	*reg_addr |= (bits_value << bit_start_pos);
+}
+
