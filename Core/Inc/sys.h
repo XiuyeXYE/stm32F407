@@ -1,11 +1,109 @@
 #ifndef INC_SYS_H_
 #define INC_SYS_H_
 
-#include"stm32f407xx.h"
+
+//#include"stm32f407xx.h"
+#include"stm32f4xx.h"
 
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
+
+
+/**
+  * @brief General Purpose I/O
+  */
+
+typedef struct
+{
+  __IO uint32_t MODER;    /*!< GPIO port mode register,               Address offset: 0x00      */
+  __IO uint32_t OTYPER;   /*!< GPIO port output type register,        Address offset: 0x04      */
+  __IO uint32_t OSPEEDR;  /*!< GPIO port output speed register,       Address offset: 0x08      */
+  __IO uint32_t PUPDR;    /*!< GPIO port pull-up/pull-down register,  Address offset: 0x0C      */
+  __IO uint32_t IDR;      /*!< GPIO port input data register,         Address offset: 0x10      */
+  __IO uint32_t ODR;      /*!< GPIO port output data register,        Address offset: 0x14      */
+  __IO uint16_t BSRRL;    /*!< GPIO port bit set/reset low register,  Address offset: 0x18      */
+  __IO uint16_t BSRRH;    /*!< GPIO port bit set/reset high register, Address offset: 0x1A      */
+  __IO uint32_t LCKR;     /*!< GPIO port configuration lock register, Address offset: 0x1C      */
+  __IO uint32_t AFR[2];   /*!< GPIO alternate function registers,     Address offset: 0x20-0x24 */
+} GPIO_TypeDef2;
+
+#define GPIOF_BASE2            (AHB1PERIPH_BASE + 0x1400UL)
+#define GPIOF2               ((GPIO_TypeDef2 *) GPIOF_BASE)
+
+/**
+  * @brief  GPIO Configuration Mode enumeration
+  */
+typedef enum
+{
+  GPIO_Mode_IN   = 0x00, /*!< GPIO Input Mode */
+  GPIO_Mode_OUT  = 0x01, /*!< GPIO Output Mode */
+  GPIO_Mode_AF   = 0x02, /*!< GPIO Alternate function Mode */
+  GPIO_Mode_AN   = 0x03  /*!< GPIO Analog Mode */
+}GPIOMode_TypeDef;
+
+
+/**
+  * @brief  GPIO Output type enumeration
+  */
+typedef enum
+{
+  GPIO_OType_PP = 0x00,
+  GPIO_OType_OD = 0x01
+}GPIOOType_TypeDef;
+
+
+/**
+  * @brief  GPIO Output Maximum frequency enumeration
+  */
+typedef enum
+{
+  GPIO_Low_Speed     = 0x00, /*!< Low speed    */
+  GPIO_Medium_Speed  = 0x01, /*!< Medium speed */
+  GPIO_Fast_Speed    = 0x02, /*!< Fast speed   */
+  GPIO_High_Speed    = 0x03  /*!< High speed   */
+}GPIOSpeed_TypeDef;
+
+/* Add legacy definition */
+#define  GPIO_Speed_2MHz    GPIO_Low_Speed
+#define  GPIO_Speed_25MHz   GPIO_Medium_Speed
+#define  GPIO_Speed_50MHz   GPIO_Fast_Speed
+#define  GPIO_Speed_100MHz  GPIO_High_Speed
+
+
+/**
+  * @brief  GPIO Configuration PullUp PullDown enumeration
+  */
+typedef enum
+{
+  GPIO_PuPd_NOPULL = 0x00,
+  GPIO_PuPd_UP     = 0x01,
+  GPIO_PuPd_DOWN   = 0x02
+}GPIOPuPd_TypeDef;
+
+
+
+/**
+  * @brief   GPIO Init structure definition
+  */
+typedef struct
+{
+  uint32_t GPIO_Pin;              /*!< Specifies the GPIO pins to be configured.
+                                       This parameter can be any value of @ref GPIO_pins_define */
+
+  GPIOMode_TypeDef GPIO_Mode;     /*!< Specifies the operating mode for the selected pins.
+                                       This parameter can be a value of @ref GPIOMode_TypeDef */
+
+  GPIOSpeed_TypeDef GPIO_Speed;   /*!< Specifies the speed for the selected pins.
+                                       This parameter can be a value of @ref GPIOSpeed_TypeDef */
+
+  GPIOOType_TypeDef GPIO_OType;   /*!< Specifies the operating output type for the selected pins.
+                                       This parameter can be a value of @ref GPIOOType_TypeDef */
+
+  GPIOPuPd_TypeDef GPIO_PuPd;     /*!< Specifies the operating Pull-up/Pull down for the selected pins.
+                                       This parameter can be a value of @ref GPIOPuPd_TypeDef */
+}GPIO_InitTypeDef2;
+
 
 //0,不支持OS
 //1,支持OS
@@ -117,6 +215,10 @@ typedef uint32_t u32;
 #define PIN13				1<<13
 #define PIN14				1<<14
 #define PIN15				1<<15
+
+
+#define RCC_AHB1Periph_GPIOF             ((uint32_t)0x00000020)
+
 //////////////////////////////////////////////////////////////////////////////////
 u8 Sys_Clock_Set(u32 plln, u32 pllm, u32 pllp, u32 pllq);		//系统时钟设置
 void Stm32_Clock_Init(u32 plln, u32 pllm, u32 pllp, u32 pllq); //时钟初始化
@@ -142,4 +244,11 @@ void Reg_Pos_Bits_Reset_0(__IO uint32_t *reg_addr, u32 bit_start_pos,
 void Reg_Pos_Bits_Set(__IO uint32_t *reg_addr, u32 bit_start_pos,
 		u32 bits_value);
 
+
+void RCC_AHB1PeriphClockCmd(uint32_t RCC_AHB1Periph, FunctionalState NewState);
+void GPIO_ResetBits2(GPIO_TypeDef2* GPIOx, uint16_t GPIO_Pin);
+void GPIO_Init2(GPIO_TypeDef2* GPIOx, GPIO_InitTypeDef2* GPIO_InitStruct);
+void GPIO_SetBits2(GPIO_TypeDef2* GPIOx, uint16_t GPIO_Pin);
+
 #endif
+

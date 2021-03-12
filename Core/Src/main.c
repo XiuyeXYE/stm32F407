@@ -16,6 +16,8 @@
  *
  ******************************************************************************
  */
+
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -85,6 +87,8 @@ int main(void) {
 //	Stm32_Clock_Init(336, 9, 2, 7);
 	delay_init(168);		//初始化延时函数
 	LED_Init();				//初始化LED时钟
+	BEEP_Init();
+
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -98,11 +102,13 @@ int main(void) {
 //		LED1 = 0;				//DS1亮
 //		delay_ms(500);
 		Reg_Pos_Bits_Reset_0(&GPIOF->ODR, 9, 2);
-		delay_ms(500);
+		GPIO_ResetBits2(GPIOF2,GPIO_PIN_8); //BEEP引脚拉低， 等同BEEP=0;
+		delay_ms(300);
 
 		Reg_Pos_Bits_Set(&GPIOF->ODR, 9, 3);
+		GPIO_SetBits2(GPIOF2,GPIO_PIN_8);   //BEEP引脚拉高， 等同BEEP=1;
 
-		delay_ms(500);
+		delay_ms(300);
 
 		/* USER CODE BEGIN 3 */
 	}
