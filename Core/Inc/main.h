@@ -28,12 +28,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-//#include "stm32f4xx_hal.h"
-
-#include "sys.h"
-#include"delay.h"
-#include"led.h"
-#include"beep.h"
+#include "stm32f4xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

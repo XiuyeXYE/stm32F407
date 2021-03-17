@@ -17,10 +17,12 @@
  ******************************************************************************
  */
 
-
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "gpio.h"
+#include "beep.h"
+#include "delay.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -70,45 +72,44 @@ int main(void) {
 	/* MCU Configuration--------------------------------------------------------*/
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-//  HAL_Init();
+	HAL_Init();
+
 	/* USER CODE BEGIN Init */
 
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
-//  SystemClock_Config();
+	SystemClock_Config();
+
 	/* USER CODE BEGIN SysInit */
 
 	/* USER CODE END SysInit */
 
 	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
 
-//	Stm32_Clock_Init(336, 9, 2, 7);
-	delay_init(168);		//初始化延时函数
-	LED_Init();				//初始化LED时钟
-	BEEP_Init();
-
 	/* USER CODE END 2 */
+
+	beep_init();
+
+	delay_init(16);
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		/* USER CODE END WHILE */
-//		LED0 = 0;				//DS0亮
-//		LED1 = 1;				//DS1灭
-//		delay_ms(500);
-//		LED0 = 1;				//DS0灭
-//		LED1 = 0;				//DS1亮
-//		delay_ms(500);
-		Reg_Pos_Bits_Reset_0(&GPIOF->ODR, 9, 2);
-		GPIO_ResetBits2(GPIOF2,GPIO_PIN_8); //BEEP引脚拉低， 等同BEEP=0;
-		delay_ms(300);
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_RESET);
 
-		Reg_Pos_Bits_Set(&GPIOF->ODR, 9, 3);
-		GPIO_SetBits2(GPIOF2,GPIO_PIN_8);   //BEEP引脚拉高， 等同BEEP=1;
+		delay_ms(2000);
 
-		delay_ms(300);
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_9, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET);
+
+		delay_ms(2000);
 
 		/* USER CODE BEGIN 3 */
 	}

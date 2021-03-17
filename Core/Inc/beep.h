@@ -1,17 +1,18 @@
 /*
  * beep.h
  *
- *  Created on: 2021年3月12日
+ *  Created on: Mar 17, 2021
  *      Author: Dell
  */
 
 #ifndef INC_BEEP_H_
 #define INC_BEEP_H_
+#include"main.h"
 
-#include"sys.h"
 
-#define BEEP PFout(8)	// 蜂鸣器控制IO
+void beep_init();
 
-void BEEP_Init(void); //初始化
+
+
 
 #endif /* INC_BEEP_H_ */

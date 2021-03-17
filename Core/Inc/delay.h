@@ -1,17 +1,19 @@
 /*
  * delay.h
  *
- *  Created on: 2021年3月11日
+ *  Created on: Mar 17, 2021
  *      Author: Dell
  */
 
 #ifndef INC_DELAY_H_
 #define INC_DELAY_H_
+#include "main.h"
 
-#include"sys.h"
+void delay_init(uint8_t sysclkMHZ);
 
-void delay_init(u8 SYSCLK);
-void delay_ms(u16 nms);
-void delay_us(u32 nus);
+void delay_ms(uint16_t n);
+
+void delay_us(uint32_t n);
+
 
 #endif /* INC_DELAY_H_ */
