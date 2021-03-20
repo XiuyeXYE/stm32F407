@@ -11,6 +11,8 @@ void beep_init() {
 
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
+	__HAL_RCC_GPIOF_CLK_ENABLE();
+
 	/*Configure GPIO pin Output Level */
 
 
