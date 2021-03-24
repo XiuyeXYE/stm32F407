@@ -33,13 +33,29 @@ extern "C" {
 
 /* USER CODE BEGIN Private defines */
 
+#define USART_REC_LEN 200
+//串口1中断服务程序
+//注意,读取USARTx->SR能避免莫名其妙的错误
+static uint8_t USART_RX_BUF[USART_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+//接收状态
+//bit15，	接收完成标志
+//bit14，	接收到0x0d
+//bit13~0，	接收到的有效字节数目
+static uint16_t USART_RX_STA=0;       //接收状态标记
+
+
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
+
+
+
 /* USER CODE END Prototypes */
+
+
 
 #ifdef __cplusplus
 }
