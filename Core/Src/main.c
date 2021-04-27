@@ -58,6 +58,107 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+typedef unsigned char u8;
+typedef unsigned int u32;
+
+void ext_NVIC_CONFIG(u8 gpiox, u8 bitx, u8 trim) {
+	u8 extoffset = (bitx % 4) * 4;
+	RCC->APB2ENR |= 1 << 14;
+	SYSCFG->EXTICR[bitx / 4] &= ~(0x000F << extoffset);
+	SYSCFG->EXTICR[bitx / 4] |= gpiox << extoffset;
+	EXTI->EMR |= 1 << bitx;
+	if (trim & 0x01) {
+		EXTI->FTSR |= 1 << bitx;
+	}
+	if (trim & 0x02) {
+		EXTI->RTSR |= 1 << bitx;
+	}
+
+}
+
+#define GPIO_A 				0
+#define GPIO_B 				1
+#define GPIO_C				2
+#define GPIO_D 				3
+#define GPIO_E 				4
+#define GPIO_F 				5
+#define GPIO_G 				6
+#define GPIO_H 				7
+#define GPIO_I 				8
+
+#define FTIR   				1  		//下降沿触发
+#define RTIR   				2  		//上升沿触发
+
+//设置NVIC分组
+//NVIC_Group:NVIC分组 0~4 总共5组
+void MY_NVIC_PriorityGroupConfig(u8 NVIC_Group) {
+	u32 temp, temp1;
+	temp1 = (~NVIC_Group) & 0x07; //取后三位
+	temp1 <<= 8;
+	temp = SCB->AIRCR;  //读取先前的设置
+	temp &= 0X0000F8FF; //清空先前分组
+	temp |= 0X05FA0000; //写入钥匙
+	temp |= temp1;
+	SCB->AIRCR = temp;  //设置分组
+}
+
+//设置NVIC
+//NVIC_PreemptionPriority:抢占优先级
+//NVIC_SubPriority       :响应优先级
+//NVIC_Channel           :中断编号
+//NVIC_Group             :中断分组 0~4
+//注意优先级不能超过设定的组的范围!否则会有意想不到的错误
+//组划分:
+//组0:0位抢占优先级,4位响应优先级
+//组1:1位抢占优先级,3位响应优先级
+//组2:2位抢占优先级,2位响应优先级
+//组3:3位抢占优先级,1位响应优先级
+//组4:4位抢占优先级,0位响应优先级
+//NVIC_SubPriority和NVIC_PreemptionPriority的原则是,数值越小,越优先
+void MY_NVIC_Init(u8 NVIC_PreemptionPriority, u8 NVIC_SubPriority,
+		u8 NVIC_Channel, u8 NVIC_Group) {
+	u32 temp;
+	MY_NVIC_PriorityGroupConfig(NVIC_Group);  //设置分组
+	temp = NVIC_PreemptionPriority << (4 - NVIC_Group);
+	temp |= NVIC_SubPriority & (0x0f >> NVIC_Group);
+	temp &= 0xf;								//取低四位
+	NVIC->ISER[NVIC_Channel / 32] |= 1 << NVIC_Channel % 32;//使能中断位(要清除的话,设置ICER对应位为1即可)
+	NVIC->IP[NVIC_Channel] |= temp << 4;				//设置响应优先级和抢断优先级
+}
+
+//外部中断0服务程序
+void EXTI0_IRQHandler(void) {
+	delay_ms(10);	//消抖
+	printf("EXTI0_IRQHandler");
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
+					GPIO_PIN_RESET);
+	EXTI->PR = 1 << 0;  //清除LINE0上的中断标志位
+}
+//外部中断2服务程序
+void EXTI2_IRQHandler(void) {
+	delay_ms(10);	//消抖
+	printf("EXTI2_IRQHandler");
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
+					GPIO_PIN_RESET);
+	EXTI->PR = 1 << 2;  //清除LINE2上的中断标志位
+}
+//外部中断3服务程序
+void EXTI3_IRQHandler(void) {
+	delay_ms(10);	//消抖
+	printf("EXTI3_IRQHandler");
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
+					GPIO_PIN_RESET);
+	EXTI->PR = 1 << 3;  //清除LINE3上的中断标志位
+}
+//外部中断4服务程序
+void EXTI4_IRQHandler(void) {
+	delay_ms(10);	//消抖
+	printf("EXTI4_IRQHandler");
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
+					GPIO_PIN_RESET);
+	EXTI->PR = 1 << 4;  //清除LINE4上的中断标志位
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -88,6 +189,36 @@ int main(void) {
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
+
+
+	RCC->AHB1ENR |= 1 << 0;
+	RCC->AHB1ENR |= 1 << 4;
+
+	//init key
+	GPIO_InitTypeDef GPIOE_InitStruct = { 0 };
+	GPIOE_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4;
+	GPIOE_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIOE_InitStruct.Pull = GPIO_PULLUP;
+	GPIOE_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOE, &GPIOE_InitStruct);
+
+	GPIO_InitTypeDef GPIOA_InitStruct = { 0 };
+	GPIOA_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4;
+	GPIOA_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIOA_InitStruct.Pull = GPIO_PULLDOWN;
+	GPIOA_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOE, &GPIOA_InitStruct);
+
+	ext_NVIC_CONFIG(GPIO_E, 2, FTIR);
+	ext_NVIC_CONFIG(GPIO_E, 3, FTIR);
+	ext_NVIC_CONFIG(GPIO_E, 4, FTIR);
+	ext_NVIC_CONFIG(GPIO_A, 0, RTIR);
+
+	MY_NVIC_Init(3, 2, EXTI2_IRQn, 2);		//抢占3，子优先级2，组2
+	MY_NVIC_Init(2, 2, EXTI3_IRQn, 2);		//抢占2，子优先级2，组2
+	MY_NVIC_Init(1, 2, EXTI4_IRQn, 2);		//抢占1，子优先级2，组2
+	MY_NVIC_Init(0, 2, EXTI0_IRQn, 2);		//抢占0，子优先级2，组2
+
 
 //	beep_init();
 	delay_init(168);
@@ -129,12 +260,12 @@ int main(void) {
 		}
 
 		/* USER CODE END WHILE */
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
-				GPIO_PIN_RESET);
-		delay_ms(500);
-		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
-				GPIO_PIN_SET);
-		delay_ms(500);
+//		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
+//				GPIO_PIN_RESET);
+//		delay_ms(500);
+//		HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10,
+//				GPIO_PIN_SET);
+//		delay_ms(500);
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */
